@@ -25,3 +25,8 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+@keyframes levitate {
+  0% { transform: translateY(-2px); }
+  100% { transform: translateY(2px); }
+}

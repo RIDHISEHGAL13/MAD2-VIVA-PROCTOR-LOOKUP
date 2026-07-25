@@ -52,6 +52,11 @@ export default function Home() {
   const [filterSemester, setFilterSemester] = useState<string>("all");
   const [reviewSearchQuery, setReviewSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  // macOS Bottom Dock state
+  const [hoveredDockIndex, setHoveredDockIndex] = useState<number | null>(null);
+  const [isDockHovered, setIsDockHovered] = useState(false);
+  const [activeDockIndex, setActiveDockIndex] = useState(0);
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -761,14 +766,30 @@ export default function Home() {
 
             {/* Resource Links */}
             <a
-              href="https://drive.google.com/file/d/1aK_EyvCArPfYtljPVPKl3mlLe0AD1yp5/view?usp=sharing"
+              href="https://docs.google.com/spreadsheets/d/1_fvXmKThUneyGu5-kABATWwOKqBjyLXNowyCpJ5JkiQ/edit?gid=440054230#gid=440054230"
               target="_blank"
               rel="noopener noreferrer"
-              title="Coding Questions Viva (Level 1)"
+              title="Viva Sheet"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 bg-slate-100 dark:bg-slate-900 hover:bg-orange-50 dark:hover:bg-orange-950/20 border border-slate-200/60 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900/40 px-3 py-1.5 rounded-xl transition-all duration-200"
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M3 15h18" />
+                <path d="M9 3v18" />
+                <path d="M15 3v18" />
+              </svg>
+              <span className="hidden lg:inline">Viva Sheet</span>
+            </a>
+            <a
+              href="https://drive.google.com/drive/folders/1PK2jmN5PtD-Gg0eXSgd5yXOursXGos-C?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Viva Notes"
               className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 bg-slate-100 dark:bg-slate-900 hover:bg-orange-50 dark:hover:bg-orange-950/20 border border-slate-200/60 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900/40 px-3 py-1.5 rounded-xl transition-all duration-200"
             >
               <FileText className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden lg:inline">Coding Qs</span>
+              <span className="hidden lg:inline">Viva Notes</span>
             </a>
             <a
               href="https://docs.google.com/document/d/1nx5kocdYjsUo3NKSW3RYN0xddW1nMohYoA_QUX_BlHw/edit?tab=t.5j677zg530hp"
@@ -1456,6 +1477,195 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Premium levitating macOS/VisionOS Bottom Dock */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 w-full max-w-[95vw] sm:w-auto flex justify-center pointer-events-none">
+        <motion.div
+          onMouseEnter={() => setIsDockHovered(true)}
+          onMouseLeave={() => {
+            setIsDockHovered(false);
+            setHoveredDockIndex(null);
+          }}
+          animate={{
+            y: isDockHovered ? -4 : 0
+          }}
+          transition={{
+            duration: 0.45,
+            ease: [0.22, 1, 0.36, 1]
+          }}
+          className="pointer-events-auto h-[64px] sm:h-[72px] px-4 sm:px-6 rounded-[999px] flex items-center justify-center gap-2 sm:gap-4 bg-white/10 dark:bg-slate-950/15 backdrop-blur-[30px] border border-white/20 dark:border-slate-800/40 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative"
+          style={{
+            animation: 'levitate 7s ease-in-out infinite alternate',
+          }}
+        >
+          {/* Subtle reflection overlay (VisionOS UI style) */}
+          <div className="absolute inset-0 rounded-[999px] bg-gradient-to-b from-white/10 to-transparent pointer-events-none border border-white/5" />
+          
+          {[
+            { 
+              label: "Home", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              ),
+              onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+              url: null
+            },
+            { 
+              label: "About", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              ),
+              url: "https://linkedin.com/in/ridhi-sehgal-177890265"
+            },
+            { 
+              label: "Linktree", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 13V3" />
+                  <path d="M12 13 5 6" />
+                  <path d="M12 13 19 6" />
+                  <path d="M12 13H4" />
+                  <path d="M12 13h8" />
+                  <path d="M12 13l-6 6" />
+                  <path d="M12 13l6 6" />
+                  <path d="M12 17v5" />
+                </svg>
+              ),
+              url: "https://linktr.ee/ridhi13"
+            },
+            { 
+              label: "GitHub", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+              ),
+              url: "https://github.com/RIDHISEHGAL13/"
+            },
+            { 
+              label: "Portfolio", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                  <path d="M2 12h20"/>
+                </svg>
+              ),
+              url: "https://ridhi.framer.website/"
+            },
+            { 
+              label: "Instagram", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+              ),
+              url: "https://www.instagram.com/ridhi_sehgal1303/"
+            },
+            { 
+              label: "LinkedIn", 
+              icon: (
+                <svg className="w-5 h-5 sm:w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                  <rect x="2" y="9" width="4" height="12"/>
+                  <circle cx="4" cy="4" r="2"/>
+                </svg>
+              ),
+              url: "https://linkedin.com/in/ridhi-sehgal-177890265"
+            }
+          ].map((item, i) => {
+            const isHovered = hoveredDockIndex === i;
+            const isActive = activeDockIndex === i;
+            const dist = hoveredDockIndex !== null ? Math.abs(hoveredDockIndex - i) : null;
+            
+            // macOS Dock proximity magnification scales & translations
+            let scale = 1;
+            let y = 0;
+            let rotate = 0;
+            
+            if (dist === 0) {
+              scale = 1.18;
+              y = -10;
+              rotate = i % 2 === 0 ? 2 : -2;
+            } else if (dist === 1) {
+              scale = 1.08;
+              y = -4;
+            }
+
+            return (
+              <motion.a
+                key={i}
+                href={item.url || "#"}
+                target={item.url ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  setActiveDockIndex(i);
+                  if (item.onClick) {
+                    e.preventDefault();
+                    item.onClick();
+                  }
+                }}
+                onMouseEnter={() => setHoveredDockIndex(i)}
+                animate={{
+                  scale,
+                  y,
+                  rotate
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 18,
+                  mass: 0.8
+                }}
+                className={`relative p-2.5 sm:p-3.5 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-300 z-10 ${
+                  isHovered 
+                    ? "text-white" 
+                    : isActive 
+                      ? "text-[#FF6A00] bg-gradient-to-r from-[#FF6A00]/15 to-[#FF2D55]/15 shadow-[0_0_15px_rgba(255,106,0,0.2)] border border-[#FF6A00]/30" 
+                      : "text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {/* Expanding background glow on hover */}
+                <motion.span 
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-[#FF6A00] to-[#FF2D55] -z-10 shadow-lg shadow-orange-500/35"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ 
+                    scale: isHovered ? 1 : 0,
+                    opacity: isHovered ? 1 : 0
+                  }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                />
+
+                {item.icon}
+
+                {/* visionOS Tooltip */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.span
+                      initial={{ opacity: 0, y: 10, scale: 0.85, x: "-50%" }}
+                      animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                      exit={{ opacity: 0, y: 5, scale: 0.95, x: "-50%" }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute bottom-full left-1/2 mb-3.5 px-3 py-1.5 text-[10px] font-extrabold text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 rounded-xl shadow-xl whitespace-nowrap z-50 pointer-events-none"
+                    >
+                      {item.label}
+                      <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white dark:border-t-slate-900"></span>
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.a>
+            );
+          })}
+        </motion.div>
+      </div>
     </div>
   );
 }
