@@ -1171,7 +1171,7 @@ export default function Home() {
               <button
                 onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
                 disabled={recentPage === 1}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                className="cursor-pointer px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all"
               >
                 Prev
               </button>
@@ -1179,10 +1179,10 @@ export default function Home() {
                 <button
                   key={page}
                   onClick={() => setRecentPage(page)}
-                  className={`w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center border transition-all ${
+                  className={`cursor-pointer w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center border transition-all hover:scale-110 active:scale-95 ${
                     recentPage === page
                       ? "bg-gradient-to-r from-[#FF6A00] to-[#FF2D55] text-white border-transparent shadow-lg shadow-orange-500/20"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-455"
+                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-900/40 hover:text-[#FF6A00] text-slate-600 dark:text-slate-400"
                   }`}
                 >
                   {page}
@@ -1191,7 +1191,7 @@ export default function Home() {
               <button
                 onClick={() => setRecentPage((p) => Math.min(3, p + 1))}
                 disabled={recentPage === 3}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                className="cursor-pointer px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all"
               >
                 Next
               </button>
