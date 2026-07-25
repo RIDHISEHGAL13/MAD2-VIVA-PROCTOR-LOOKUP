@@ -45,6 +45,7 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "info" } | null>(null);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [expandedReviews, setExpandedReviews] = useState<Record<number, boolean>>({});
+  const [recentPage, setRecentPage] = useState(1);
   
   // Filters state
   const [filterDifficulty, setFilterDifficulty] = useState<"all" | "easy" | "medium" | "hard">("all");
@@ -322,6 +323,7 @@ export default function Home() {
     setFilterDifficulty("all");
     setFilterTopic("all");
     setFilterSemester("all");
+    setRecentPage(1);
     
     // Clear URL query parameter
     if (typeof window !== "undefined") {
@@ -377,7 +379,7 @@ export default function Home() {
       .map(([norm]) => casingMap[norm]);
   }, [vivaData]);
 
-  // Latest 30 reviews for landing page
+  // Latest 60 reviews for landing page
   const recentReviews = useMemo(() => {
     return [...vivaData]
       .sort((a, b) => {
@@ -386,8 +388,14 @@ export default function Home() {
         }
         return b.id - a.id;
       })
-      .slice(0, 30);
+      .slice(0, 60);
   }, [vivaData]);
+
+  // Paginated recent reviews (20 per page)
+  const paginatedRecentReviews = useMemo(() => {
+    const startIndex = (recentPage - 1) * 20;
+    return recentReviews.slice(startIndex, startIndex + 20);
+  }, [recentReviews, recentPage]);
 
   // Trigger search
   const handleSearch = (query: string) => {
@@ -1033,7 +1041,7 @@ export default function Home() {
               <div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
-                  <span>Recent Reviews (Latest 30)</span>
+                  <span>Recent Reviews (Latest 60)</span>
                 </h3>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                   See what other students were asked in their recent vivas
@@ -1045,7 +1053,7 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {recentReviews.map((record) => {
+              {paginatedRecentReviews.map((record) => {
                 const diff = getReviewDifficulty(record);
                 const topics = getReviewTopics(record);
                 const isLiked = likedReviews[record.id];
@@ -1146,7 +1154,7 @@ export default function Home() {
                         </button>
                         <button
                           onClick={() => copyToClipboard(record.questions.join("\n"), "Questions")}
-                          className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200/50 dark:border-slate-800 rounded-xl transition-all duration-200"
+                          className="p-2 text-slate-400 hover:text-[#FF6A00] bg-white dark:bg-slate-900 hover:bg-orange-50 dark:hover:bg-orange-950/20 border border-slate-200 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900/40 rounded-xl transition-all duration-200"
                           title="Copy Questions"
                         >
                           <Copy className="w-3.5 h-3.5" />
@@ -1156,6 +1164,37 @@ export default function Home() {
                   </motion.div>
                 );
               })}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-center gap-3 pt-6 mt-4">
+              <button
+                onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
+                disabled={recentPage === 1}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+              >
+                Prev
+              </button>
+              {[1, 2, 3].map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setRecentPage(page)}
+                  className={`w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center border transition-all ${
+                    recentPage === page
+                      ? "bg-gradient-to-r from-[#FF6A00] to-[#FF2D55] text-white border-transparent shadow-lg shadow-orange-500/20"
+                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-455"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => setRecentPage((p) => Math.min(3, p + 1))}
+                disabled={recentPage === 3}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+              >
+                Next
+              </button>
             </div>
           </div>
         )}
