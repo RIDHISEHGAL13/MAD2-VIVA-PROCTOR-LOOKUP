@@ -377,6 +377,18 @@ export default function Home() {
       .map(([norm]) => casingMap[norm]);
   }, [vivaData]);
 
+  // Latest 20 reviews for landing page
+  const recentReviews = useMemo(() => {
+    return [...vivaData]
+      .sort((a, b) => {
+        if (b.rawTimestamp !== a.rawTimestamp) {
+          return b.rawTimestamp - a.rawTimestamp;
+        }
+        return b.id - a.id;
+      })
+      .slice(0, 20);
+  }, [vivaData]);
+
   // Trigger search
   const handleSearch = (query: string) => {
     const q = query.trim();
@@ -1015,6 +1027,140 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Recent Reviews (Shown when user has not searched yet) */}
+        {!isSearching && !hasSearched && vivaData.length > 0 && (
+          <div className="w-full max-w-5xl space-y-6 mt-12">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
+                  <span>Recent Reviews (Latest 20)</span>
+                </h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
+                  See what other students were asked in their recent vivas
+                </p>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-200/40 dark:border-slate-800/40">
+                Total Submissions: {vivaData.length}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {recentReviews.map((record) => {
+                const diff = getReviewDifficulty(record);
+                const topics = getReviewTopics(record);
+                const isLiked = likedReviews[record.id];
+                const helpfulVal = helpfulCounts[record.id] || 0;
+                const isExpanded = expandedReviews[record.id];
+
+                return (
+                  <motion.div
+                    key={record.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Top Header of review card: Proctor details & Difficulty */}
+                      <div className="flex justify-between items-start gap-4 mb-3 pb-3 border-b border-slate-150/40 dark:border-slate-800/40">
+                        <div>
+                          <button
+                            onClick={() => {
+                              setSearchQuery(record.proctorId);
+                              handleSearch(record.proctorId);
+                            }}
+                            className="text-sm font-black text-[#FF6A00] hover:text-[#FF2D55] dark:hover:text-[#FF6A00] transition-colors flex items-center gap-1.5"
+                          >
+                            <span className="w-6 h-6 rounded-lg bg-orange-50 dark:bg-orange-950/20 text-[#FF6A00] flex items-center justify-center text-[10px] font-black border border-orange-100 dark:border-orange-900/30">
+                              PR
+                            </span>
+                            <span>{record.proctorId}</span>
+                          </button>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                            {record.studentName} &bull; {record.submissionDate || "N/A"}
+                          </span>
+                        </div>
+                        <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                          diff === "Easy" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20" :
+                          diff === "Hard" ? "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/20" :
+                          "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20"
+                        }`}>
+                          {diff}
+                        </span>
+                      </div>
+
+                      {/* Questions List */}
+                      <div className="space-y-1.5 my-3">
+                        <h4 className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          <span>Questions</span>
+                        </h4>
+                        <ul className="space-y-1.5 pl-0.5 max-h-[120px] overflow-y-auto pr-1">
+                          {record.questions.map((q, qidx) => (
+                            <li key={qidx} className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-semibold flex items-start gap-1.5">
+                              <span className="text-orange-500 select-none font-bold mt-0.5">•</span>
+                              <span>{q}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Suggestions advice if present */}
+                      {record.suggestions && (
+                        <div className="bg-slate-50/60 dark:bg-slate-900/40 border border-slate-100/50 dark:border-slate-800/50 p-2.5 rounded-xl mt-3">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Advice</span>
+                            <button
+                              onClick={() => setExpandedReviews({ ...expandedReviews, [record.id]: !isExpanded })}
+                              className="text-[9px] font-bold text-[#FF2D55] hover:underline"
+                            >
+                              {isExpanded ? "Collapse" : "Expand"}
+                            </button>
+                          </div>
+                          <p className={`text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium ${isExpanded ? 'whitespace-pre-line' : 'line-clamp-2'}`}>
+                            {record.suggestions}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bottom row: topics tags & actions */}
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-150/40 dark:border-slate-800/40 mt-4">
+                      <div className="flex flex-wrap gap-1 max-w-[60%]">
+                        {topics.slice(0, 2).map(t => (
+                          <span key={t} className="text-[8px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleLike(record.id)}
+                          className={`flex items-center gap-1 text-[10px] font-bold py-1 px-2.5 rounded-lg border transition-all ${
+                            isLiked 
+                              ? "bg-rose-50 border-rose-200 text-rose-500 dark:bg-rose-950/20 dark:border-rose-900/40" 
+                              : "bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800 text-slate-400"
+                          }`}
+                        >
+                          <ThumbsUp className="w-3 h-3" />
+                          <span>Helpful {helpfulVal > 0 ? `(${helpfulVal})` : ""}</span>
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(record.questions.join("\n"), "Questions")}
+                          className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"
+                          title="Copy Questions"
+                        >
+                          <Copy className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Loading skeletons */}
         {isSearching && (
