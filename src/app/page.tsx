@@ -255,6 +255,27 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Handle URL query parameter ?proctor=proctorId on mount / data load
+  useEffect(() => {
+    if (vivaData.length === 0) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlProctor = params.get("proctor");
+    if (urlProctor) {
+      setSearchQuery(urlProctor);
+      setIsSearching(true);
+      setHasSearched(false);
+      setShowSuggestions(false);
+      
+      const qNorm = normalize(urlProctor);
+      const matched = vivaData.filter((r) => r.normalizedProctorId === qNorm);
+      setResults(matched);
+      setSearchedId(urlProctor);
+      setIsSearching(false);
+      setHasSearched(true);
+    }
+  }, [vivaData]);
+
   // Keyboard Shortcuts Handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -301,6 +322,12 @@ export default function Home() {
     setFilterDifficulty("all");
     setFilterTopic("all");
     setFilterSemester("all");
+    
+    // Clear URL query parameter
+    if (typeof window !== "undefined") {
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+    }
   };
 
   // Normalize helper
@@ -357,6 +384,12 @@ export default function Home() {
     updatedRecents = updatedRecents.slice(0, 5);
     setRecentSearches(updatedRecents);
     localStorage.setItem("recent_searches", JSON.stringify(updatedRecents));
+
+    // Update URL query parameter
+    if (typeof window !== "undefined") {
+      const newUrl = `${window.location.origin}${window.location.pathname}?proctor=${encodeURIComponent(q)}`;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+    }
 
     setTimeout(() => {
       const qNorm = normalize(q);
