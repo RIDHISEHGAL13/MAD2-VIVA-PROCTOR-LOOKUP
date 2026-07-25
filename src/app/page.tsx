@@ -801,6 +801,16 @@ export default function Home() {
               <BookOpen className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden lg:inline">Resources</span>
             </a>
+            <a
+              href="https://vivaflow.study.iitm.ac.in/student/view_rubrics/1"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Rubrics"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 bg-slate-100 dark:bg-slate-900 hover:bg-orange-50 dark:hover:bg-orange-950/20 border border-slate-200/60 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900/40 px-3 py-1.5 rounded-xl transition-all duration-200"
+            >
+              <Award className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden lg:inline">Rubrics</span>
+            </a>
 
             {/* Theme Toggle Button */}
             <button
