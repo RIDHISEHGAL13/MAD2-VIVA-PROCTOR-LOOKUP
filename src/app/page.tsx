@@ -358,15 +358,23 @@ export default function Home() {
   // Frequently searched proctors based on frequency in dataset
   const popularProctors = useMemo(() => {
     const counts: Record<string, number> = {};
+    const casingMap: Record<string, string> = {};
+
     for (const record of vivaData) {
       if (record.proctorId) {
-        counts[record.proctorId] = (counts[record.proctorId] || 0) + 1;
+        const norm = record.normalizedProctorId;
+        counts[norm] = (counts[norm] || 0) + 1;
+        if (!casingMap[norm]) {
+          casingMap[norm] = record.proctorId;
+        } else if (record.proctorId[0] === record.proctorId[0].toUpperCase() && casingMap[norm][0] !== casingMap[norm][0].toUpperCase()) {
+          casingMap[norm] = record.proctorId;
+        }
       }
     }
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
-      .map(([pid]) => pid);
+      .map(([norm]) => casingMap[norm]);
   }, [vivaData]);
 
   // Trigger search
