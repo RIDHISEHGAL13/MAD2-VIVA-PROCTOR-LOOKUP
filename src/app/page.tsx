@@ -1027,11 +1027,9 @@ export default function Home() {
             )}
           </div>
         </div>
-
-        {/* Recent Reviews (Shown when user has not searched yet) */}
         {!isSearching && !hasSearched && vivaData.length > 0 && (
           <div className="w-full max-w-5xl space-y-6 mt-12">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-4">
               <div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
@@ -1059,47 +1057,47 @@ export default function Home() {
                     key={record.id}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                    className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-xs hover:shadow-xl dark:hover:shadow-[0_0_30px_rgba(255,106,0,0.06)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       {/* Top Header of review card: Proctor details & Difficulty */}
-                      <div className="flex justify-between items-start gap-4 mb-3 pb-3 border-b border-slate-150/40 dark:border-slate-800/40">
+                      <div className="flex justify-between items-center gap-4 mb-4 pb-3.5 border-b border-slate-100 dark:border-slate-800/60">
                         <div>
                           <button
                             onClick={() => {
                               setSearchQuery(record.proctorId);
                               handleSearch(record.proctorId);
                             }}
-                            className="text-sm font-black text-[#FF6A00] hover:text-[#FF2D55] dark:hover:text-[#FF6A00] transition-colors flex items-center gap-1.5"
+                            className="bg-gradient-to-r from-orange-500/5 to-rose-500/5 dark:from-orange-500/10 dark:to-rose-500/10 hover:from-orange-500/15 hover:to-rose-500/15 border border-orange-500/20 dark:border-orange-500/30 px-3 py-1.5 rounded-xl text-orange-600 dark:text-orange-400 font-extrabold text-xs transition-all flex items-center gap-2"
                           >
-                            <span className="w-6 h-6 rounded-lg bg-orange-50 dark:bg-orange-950/20 text-[#FF6A00] flex items-center justify-center text-[10px] font-black border border-orange-100 dark:border-orange-900/30">
+                            <span className="w-4 h-4 rounded-md bg-gradient-to-tr from-[#FF6A00] to-[#FF2D55] text-white flex items-center justify-center text-[8px] font-black">
                               PR
                             </span>
                             <span>{record.proctorId}</span>
                           </button>
-                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold block mt-1.5">
                             {record.studentName} &bull; {record.submissionDate || "N/A"}
                           </span>
                         </div>
                         <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                          diff === "Easy" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20" :
-                          diff === "Hard" ? "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/20" :
-                          "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20"
+                          diff === "Easy" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20 border border-emerald-200/20 dark:border-emerald-900/30" :
+                          diff === "Hard" ? "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/20 border border-rose-200/20 dark:border-rose-900/30" :
+                          "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20 border border-amber-200/20 dark:border-amber-900/30"
                         }`}>
                           {diff}
                         </span>
                       </div>
 
                       {/* Questions List */}
-                      <div className="space-y-1.5 my-3">
-                        <h4 className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          <span>Questions</span>
+                      <div className="space-y-2 my-4">
+                        <h4 className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Questions Asked</span>
                         </h4>
-                        <ul className="space-y-1.5 pl-0.5 max-h-[120px] overflow-y-auto pr-1">
+                        <ul className="space-y-2.5 pl-0.5 max-h-[160px] overflow-y-auto pr-1">
                           {record.questions.map((q, qidx) => (
-                            <li key={qidx} className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-semibold flex items-start gap-1.5">
-                              <span className="text-orange-500 select-none font-bold mt-0.5">•</span>
+                            <li key={qidx} className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-semibold flex items-start gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-orange-500/70 dark:bg-orange-400/70 shrink-0 mt-1.5"></span>
                               <span>{q}</span>
                             </li>
                           ))}
@@ -1108,12 +1106,12 @@ export default function Home() {
 
                       {/* Suggestions advice if present */}
                       {record.suggestions && (
-                        <div className="bg-slate-50/60 dark:bg-slate-900/40 border border-slate-100/50 dark:border-slate-800/50 p-2.5 rounded-xl mt-3">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Advice</span>
+                        <div className="border-l-2 border-rose-500/30 dark:border-rose-500/40 bg-rose-500/5 dark:bg-rose-950/10 p-3.5 rounded-r-2xl mt-4">
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-[8px] font-extrabold text-rose-500/80 dark:text-rose-400/80 uppercase tracking-wider">Student Advice</span>
                             <button
                               onClick={() => setExpandedReviews({ ...expandedReviews, [record.id]: !isExpanded })}
-                              className="text-[9px] font-bold text-[#FF2D55] hover:underline"
+                              className="text-[9px] font-bold text-[#FF2D55] hover:underline focus:outline-hidden"
                             >
                               {isExpanded ? "Collapse" : "Expand"}
                             </button>
@@ -1126,32 +1124,32 @@ export default function Home() {
                     </div>
 
                     {/* Bottom row: topics tags & actions */}
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-150/40 dark:border-slate-800/40 mt-4">
-                      <div className="flex flex-wrap gap-1 max-w-[60%]">
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/60 mt-5">
+                      <div className="flex flex-wrap gap-1.5 max-w-[55%]">
                         {topics.slice(0, 2).map(t => (
-                          <span key={t} className="text-[8px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md">
+                          <span key={t} className="text-[8px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200/10 dark:border-slate-700/20">
                             {t}
                           </span>
                         ))}
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleLike(record.id)}
-                          className={`flex items-center gap-1 text-[10px] font-bold py-1 px-2.5 rounded-lg border transition-all ${
+                          className={`flex items-center gap-1.5 text-[10px] font-bold py-1.5 px-3 rounded-xl border transition-all duration-200 active:scale-95 ${
                             isLiked 
                               ? "bg-rose-50 border-rose-200 text-rose-500 dark:bg-rose-950/20 dark:border-rose-900/40" 
                               : "bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800 text-slate-400"
                           }`}
                         >
-                          <ThumbsUp className="w-3 h-3" />
+                          <ThumbsUp className="w-3.5 h-3.5" />
                           <span>Helpful {helpfulVal > 0 ? `(${helpfulVal})` : ""}</span>
                         </button>
                         <button
                           onClick={() => copyToClipboard(record.questions.join("\n"), "Questions")}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"
+                          className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200/50 dark:border-slate-800 rounded-xl transition-all duration-200"
                           title="Copy Questions"
                         >
-                          <Copy className="w-3 h-3" />
+                          <Copy className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>

@@ -30,3 +30,22 @@ body {
   0% { transform: translateY(-2px); }
   100% { transform: translateY(2px); }
 }
+
+/* Custom Scrollbar styles globally */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.25);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.45);
+}
