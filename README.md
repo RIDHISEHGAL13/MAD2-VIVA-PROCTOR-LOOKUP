@@ -1,3 +1,3 @@
-# RESOURCES-BY-RIDHI
+# MAD2 VIVA PROCTOR LOOKUP
 
-# https://iitmresources-ridhi.vercel.app/
+# https://mad2-viva.netlify.app/
