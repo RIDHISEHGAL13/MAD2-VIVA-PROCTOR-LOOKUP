@@ -377,7 +377,7 @@ export default function Home() {
       .map(([norm]) => casingMap[norm]);
   }, [vivaData]);
 
-  // Latest 20 reviews for landing page
+  // Latest 30 reviews for landing page
   const recentReviews = useMemo(() => {
     return [...vivaData]
       .sort((a, b) => {
@@ -386,7 +386,7 @@ export default function Home() {
         }
         return b.id - a.id;
       })
-      .slice(0, 20);
+      .slice(0, 30);
   }, [vivaData]);
 
   // Trigger search
@@ -1033,7 +1033,7 @@ export default function Home() {
               <div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
-                  <span>Recent Reviews (Latest 20)</span>
+                  <span>Recent Reviews (Latest 30)</span>
                 </h3>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                   See what other students were asked in their recent vivas
