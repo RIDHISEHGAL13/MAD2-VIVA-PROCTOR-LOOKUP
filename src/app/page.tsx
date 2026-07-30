@@ -357,25 +357,40 @@ export default function Home() {
     return matches;
   }, [searchQuery, vivaData]);
 
-  // Frequently searched proctors based on frequency in dataset
+  // Trending proctors: top 10 proctors by review count in the most recent month of the dataset
   const popularProctors = useMemo(() => {
+    if (vivaData.length === 0) return [];
+
+    // 1. Find the most recent month in the entire dataset
+    const maxTimestamp = Math.max(...vivaData.map(r => r.rawTimestamp || 0));
+    const mostRecentDate = new Date(maxTimestamp);
+    const recentYear = mostRecentDate.getFullYear();
+    const recentMonth = mostRecentDate.getMonth(); // 0-indexed
+
+    // 2. Count reviews per proctor only within that month
     const counts: Record<string, number> = {};
     const casingMap: Record<string, string> = {};
 
     for (const record of vivaData) {
-      if (record.proctorId) {
-        const norm = record.normalizedProctorId;
-        counts[norm] = (counts[norm] || 0) + 1;
-        if (!casingMap[norm]) {
-          casingMap[norm] = record.proctorId;
-        } else if (record.proctorId[0] === record.proctorId[0].toUpperCase() && casingMap[norm][0] !== casingMap[norm][0].toUpperCase()) {
-          casingMap[norm] = record.proctorId;
-        }
+      if (!record.proctorId || !record.rawTimestamp) continue;
+      const d = new Date(record.rawTimestamp);
+      if (d.getFullYear() !== recentYear || d.getMonth() !== recentMonth) continue;
+
+      const norm = record.normalizedProctorId;
+      counts[norm] = (counts[norm] || 0) + 1;
+
+      // Prefer properly-cased proctor ID
+      if (!casingMap[norm]) {
+        casingMap[norm] = record.proctorId;
+      } else if (record.proctorId[0] === record.proctorId[0].toUpperCase() && casingMap[norm][0] !== casingMap[norm][0].toUpperCase()) {
+        casingMap[norm] = record.proctorId;
       }
     }
+
+    // 3. Sort by count descending, return top 10
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 10)
       .map(([norm]) => casingMap[norm]);
   }, [vivaData]);
 
@@ -467,9 +482,12 @@ export default function Home() {
 
   // Helper to estimate difficulty of single review
   const getReviewDifficulty = (record: VivaRecord): "Easy" | "Medium" | "Hard" => {
+    if (record.studentName.toLowerCase().includes("ridz") && record.proctorId.toLowerCase().includes("level3_49")) {
+      return "Hard";
+    }
     const text = (record.questions.join(" ") + " " + record.suggestions).toLowerCase();
     let score = 0;
-    if (/\b(strict|grill|hard|tough|deep|detail|normalized|cross|complicated)\b/i.test(text)) score += 3;
+    if (/\b(strict|grill|hard|tough|deep|detail|normalized|cross|complicated|difficult)\b/i.test(text)) score += 3;
     if (/\b(friendly|patient|easy|direct|simple|nice|cool)\b/i.test(text)) score -= 2;
     if (record.questions.length > 3) score += 1;
     
@@ -1084,7 +1102,7 @@ export default function Home() {
                             <span>{record.proctorId}</span>
                           </button>
                           <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold block mt-1.5">
-                            {record.studentName} &bull; {record.submissionDate || "N/A"}
+                            {record.studentName} &bull; {record.rawTimestamp ? new Date(record.rawTimestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }) : record.submissionDate || "N/A"}
                           </span>
                         </div>
                         <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
@@ -1263,6 +1281,27 @@ export default function Home() {
                       <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
                         {proctorStats.originalId}
                       </h2>
+                      {proctorStats.originalId.toLowerCase() === "level1_93" && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.7 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                          className="relative overflow-hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-black tracking-wide sweetest-badge cursor-default hover:scale-105 transition-transform duration-300"
+                          style={{
+                            background: "linear-gradient(135deg, #ff6eb4 0%, #ff3e8a 50%, #ff85c2 100%)",
+                            color: "#fff",
+                            boxShadow: "0 0 14px 3px rgba(255,62,138,0.35), 0 2px 8px rgba(255,110,180,0.25)",
+                          }}
+                        >
+                          <span className="relative z-10 flex items-center gap-1.5 drop-shadow-sm">
+                            Sweetest proctor 🤗
+                          </span>
+                          <span 
+                            className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full"
+                            style={{ animation: "shimmer 2.5s infinite" }}
+                          ></span>
+                        </motion.span>
+                      )}
                       <button
                         onClick={() => toggleFavorite(proctorStats.originalId)}
                         className="p-1.5 rounded-lg border border-slate-200/60 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 transition-colors"
@@ -1594,7 +1633,7 @@ export default function Home() {
                               {record.studentName}
                             </h4>
                             <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
-                              {record.submissionDate || "N/A"}
+                              {record.rawTimestamp ? new Date(record.rawTimestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }) : record.submissionDate || "N/A"}
                             </span>
                           </div>
                         </div>

@@ -31,6 +31,20 @@ body {
   100% { transform: translateY(2px); }
 }
 
+@keyframes heart-glow {
+  0%, 100% { box-shadow: 0 0 10px 2px rgba(255,62,138,0.30), 0 2px 8px rgba(255,110,180,0.20); }
+  50%       { box-shadow: 0 0 20px 6px rgba(255,62,138,0.50), 0 4px 14px rgba(255,110,180,0.35); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+.sweetest-badge {
+  animation: heart-glow 2.2s ease-in-out infinite;
+}
+
 /* Custom Scrollbar styles globally */
 ::-webkit-scrollbar {
   width: 6px;
